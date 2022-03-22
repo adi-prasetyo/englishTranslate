@@ -1,10 +1,19 @@
 import pandas as pd
 import re
+import os
 import unicodedata
 
-df_ingredients = pd.read_excel(r'C:\Users\adipr\englishIngredientsTranslate\ingredients_japanese.xlsx')
-df_dictionary = pd.read_excel(r'C:\Users\adipr\englishIngredientsTranslate\ingredients_dictionary.xlsx')
-df_separator = pd.read_excel(r'C:\Users\adipr\englishIngredientsTranslate\ingredients_separator.xlsx')
+folderPath = r'C:\Users\adipr\englishIngredientsTranslate'
+
+ingredients = 'ingredients.xlsx'
+ingredients_dictionary = 'ingredients_dictionary.xlsx'
+ingredients_separator = 'ingredients_separator.xlsx'
+result = 'result.xlsx'
+ingredients_unknown = 'ingredients_unknown.xlsx'
+
+df_ingredients = pd.read_excel(os.path.join(folderPath, ingredients))
+df_dictionary = pd.read_excel(os.path.join(folderPath, ingredients_dictionary))
+df_separator = pd.read_excel(os.path.join(folderPath, ingredients_separator))
 
 #put into dict
 sepDict = dict(zip(df_separator.Separator_original, df_separator.Separator_clean)) 
@@ -30,7 +39,7 @@ df_ingredients['result'] = [re.sub(r'(?<=[.,:])(?=[^\s])', r' ', e) for e in df_
 #capitalize first letter
 df_ingredients['result'] = [myString[:1].upper() + myString[1:] for myString in df_ingredients['result']]
 
-df_ingredients.to_excel(r'C:\Users\adipr\englishIngredientsTranslate\ingredients_result.xlsx',  sheet_name='Sheet1', index = False) 
+df_ingredients.to_excel(os.path.join(folderPath, result),  sheet_name='Sheet1', index = False) 
 
 # get the japanese unknown words
 flat_list = [item for sublist in [re.split('\W+', e) for e in df_ingredients['result']] for item in sublist]
@@ -42,5 +51,5 @@ for word in flat_list:
         jap_word.add(word)
         
 df_jap = pd.DataFrame(list(jap_word))
-df_jap.to_excel(r'C:\Users\adipr\englishIngredientsTranslate\ingredients_unknown.xlsx',  sheet_name='Sheet1', index = False)
+df_jap.to_excel(os.path.join(folderPath, ingredients_unknown),  sheet_name='Sheet1', index = False)
 #finished
