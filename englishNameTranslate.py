@@ -26,7 +26,7 @@ def replace_startswith(text, **kwargs):
     if result == False:
         return text 
 
-folderPath = r'C:\Users\adipr\english_translate'
+folderPath = r'C:\Users\adipr\englishNameTranslate'
 
 dictionary_space = 'dictionary_space.xlsx'
 dictionary_endswith = 'dictionary_endswith.xlsx'
