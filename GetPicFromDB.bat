@@ -23,3 +23,5 @@ call conda deactivate
 
 rem open the windows folder file
 call %SystemRoot%\explorer.exe "D:\japon"
+
+cmd /K
