@@ -1,6 +1,5 @@
 import pandas as pd
 import re
-import unicodedata
 from googletrans import Translator
 import os
 
@@ -26,7 +25,7 @@ def replace_startswith(text, **kwargs):
     if result == False:
         return text 
 
-folderPath = r'C:\Users\adipr\englishNameTranslate'
+folderPath = r'C:\Users\adipr\PycharmProjects\englishTranslate\excel_list\englishNameTranslate'
 
 dictionary_space = 'dictionary_space.xlsx'
 dictionary_endswith = 'dictionary_endswith.xlsx'
@@ -42,7 +41,7 @@ df_space.sort_values(by=['English'], ascending=False, inplace=True)
 df_startswith.sort_values(by=['English'], ascending=False, inplace=True)
 df_replace.sort_values(by=['English'], ascending=False, inplace=True)
 
-df_replace['English'] = df_replace['English'] + " " #add space to the end cuz there's no space in the jap version
+df_replace['English'] = " " + df_replace['English'] + " " #add space to the end cuz there's no space in the jap version
 df_startswith['English'] = df_startswith['English'] + " " #add space to the end cuz there's no space in the jap version
 df_space['English'] = " " + df_space['English'] + " " #add space to the end cuz there's no space in the jap version
 

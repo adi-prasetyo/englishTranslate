@@ -22,4 +22,4 @@ rem Deactivate the environment
 call conda deactivate
 
 rem open the windows folder file
-call %SystemRoot%\explorer.exe "c:\Users\adipr\%FILENAME%\"
+call %SystemRoot%\explorer.exe "C:\Users\adipr\PycharmProjects\englishTranslate\excel_list\%FILENAME%\"
