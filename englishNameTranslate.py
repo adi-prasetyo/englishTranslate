@@ -31,19 +31,20 @@ dictionary_space = 'dictionary_space.xlsx'
 dictionary_endswith = 'dictionary_endswith.xlsx'
 dictionary_startswith = 'dictionary_startswith.xlsx'
 dictionary_replace = 'dictionary_replace.xlsx'
+dictionary_flavor = 'dictionary_flavor.xlsx'
+dictionary_last = 'dictionary_last.xlsx'
 
 df_space = pd.read_excel(os.path.join(folderPath, dictionary_space))
 df_endswith = pd.read_excel(os.path.join(folderPath, dictionary_endswith))
 df_startswith = pd.read_excel(os.path.join(folderPath, dictionary_startswith))
 df_replace = pd.read_excel(os.path.join(folderPath, dictionary_replace))
+df_flavor = pd.read_excel(os.path.join(folderPath, dictionary_flavor))
+df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
 
-df_space.sort_values(by=['English'], ascending=False, inplace=True)
-df_startswith.sort_values(by=['English'], ascending=False, inplace=True)
-df_replace.sort_values(by=['English'], ascending=False, inplace=True)
-
-df_replace['English'] = " " + df_replace['English'] + " " #add space to the end cuz there's no space in the jap version
-df_startswith['English'] = df_startswith['English'] + " " #add space to the end cuz there's no space in the jap version
-df_space['English'] = " " + df_space['English'] + " " #add space to the end cuz there's no space in the jap version
+#sort df and add space
+for df in [df_space,df_endswith,df_startswith,df_replace,df_flavor,df_last]:
+    df = sort_df(df)
+    df['English'] = " " + df['English'] + " "
 
 templatePath = r'C:\Users\adipr\Documents\Excel\template'
 japanese_file = 'translate eng.xlsx'
@@ -53,6 +54,8 @@ spaceDict = dict(zip(df_space['Japanese'], df_space['English']))
 replaceDict = dict(zip(df_replace['Japanese'], df_replace['English']))
 startswithDict = dict(zip(df_startswith['Japanese'], df_startswith['English']))
 endswithDict = dict(zip(df_endswith['Japanese'], df_endswith['English']))
+flavorDict = dict(zip(df_flavor['Japanese'], df_flavor['English']))
+lastDict = dict(zip(df_last['Japanese'], df_last['English']))
 
 df_result = df_japanese.copy()
 
@@ -68,10 +71,12 @@ df_result[eng_col] = df_result.apply(lambda x: replace_startswith(x[jap_col], **
 df_result[eng_col] = df_result.apply(lambda x: replace_endswith(x[eng_col], **endswithDict), axis=1)
 df_result[eng_col] = [' '.join(spaceDict.get(item,item) for item in re.split(' ', e)) for e in df_result[eng_col]]
 
-df_result[eng_col] = df_result[eng_col].replace(replaceDict, regex=True)
+#replace words regardless everything
+for regexDict in [replaceDict,flavorDict,lastDict]:
+    df_result[eng_col] = df_result[eng_col].replace(regexDict, regex=True)
 
 df_result[eng_col] = df_result[eng_col].str.replace('\s+', ' ', regex=True) #remove multiple spaces
-df_result[eng_col] = df_result[eng_col].str.strip() #remove multiple spaces
+df_result[eng_col] = df_result[eng_col].str.strip() #strip leading and trailing white spaces
 
 df_result['Barcode Number'] = df_result['Barcode Number'].astype(str)
 
