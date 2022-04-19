@@ -24,6 +24,11 @@ def replace_startswith(text, **kwargs):
             return result
     if result == False:
         return text 
+def sort_df(df):
+    df["length"] = df["Japanese"].str.len()
+    df.sort_values(by=["length", "English"], ascending=False, inplace=True)
+    return df
+
 
 folderPath = r'C:\Users\adipr\PycharmProjects\englishTranslate\excel_list\englishNameTranslate'
 
