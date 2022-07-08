@@ -46,7 +46,6 @@ dictionary_replace = "dictionary_replace.xlsx"
 dictionary_flavor = "dictionary_flavor.xlsx"
 dictionary_last = "dictionary_last.xlsx"
 
-df_space = pd.read_excel(os.path.join(folderPath, dictionary_space))
 df_endswith = pd.read_excel(os.path.join(folderPath, dictionary_endswith))
 df_startswith = pd.read_excel(os.path.join(folderPath, dictionary_startswith))
 df_replace = pd.read_excel(os.path.join(folderPath, dictionary_replace))
@@ -54,14 +53,13 @@ df_flavor = pd.read_excel(os.path.join(folderPath, dictionary_flavor))
 df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
 
 # sort df and add space
-for df in [df_space, df_endswith, df_startswith, df_replace, df_flavor, df_last]:
+for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
     df = sort_df(df)
     df["English"] = " " + df["English"] + " "
 templatePath = r"C:\Users\adipr\Documents\Excel\template"
 japanese_file = "translate eng.xlsx"
 df_japanese = pd.read_excel(os.path.join(templatePath, japanese_file))
 
-spaceDict = dict(zip(df_space["Japanese"], df_space["English"]))
 replaceDict = dict(zip(df_replace["Japanese"], df_replace["English"]))
 startswithDict = dict(zip(df_startswith["Japanese"], df_startswith["English"]))
 endswithDict = dict(zip(df_endswith["Japanese"], df_endswith["English"]))
@@ -78,6 +76,7 @@ df_result[jap_col] = df_result[jap_col].str.normalize("NFKC")
 df_result[jap_col] = df_result[
     jap_col
 ].str.strip()  # strip leading and trailing white spaces
+df_result[jap_col] = df_result[jap_col].str.replace(" ", "", regex=True) #remove all spaces in the original
 df_result[eng_col] = df_result[eng_col].astype(str)
 
 df_result[eng_col] = df_result.apply(
@@ -86,10 +85,6 @@ df_result[eng_col] = df_result.apply(
 df_result[eng_col] = df_result.apply(
     lambda x: replace_endswith(x[eng_col], **endswithDict), axis=1
 )
-df_result[eng_col] = [
-    " ".join(spaceDict.get(item, item) for item in re.split(" ", e))
-    for e in df_result[eng_col]
-]
 
 # replace words regardless everything
 for regexDict in [replaceDict, flavorDict, lastDict]:
