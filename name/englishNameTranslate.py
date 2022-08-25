@@ -52,10 +52,17 @@ df_replace = pd.read_excel(os.path.join(folderPath, dictionary_replace))
 df_flavor = pd.read_excel(os.path.join(folderPath, dictionary_flavor))
 df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
 
-# sort df and add space
+# df processing
 for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
+    # sort df and add space
     df = sort_df(df)
     df["English"] = " " + df["English"] + " "
+
+    # normalize the zenkaku and remove all spaces in the japanese column
+    df["Japanese"] = df["Japanese"].str.normalize("NFKC")
+    df["Japanese"] = df["Japanese"].str.replace(" ", "", regex=True)
+    df["Japanese"] = ["".join(re.split(" ", e)) for e in df["Japanese"]]
+
 templatePath = r"C:\Users\adipr\Documents\Excel\template"
 japanese_file = "translate eng.xlsx"
 df_japanese = pd.read_excel(os.path.join(templatePath, japanese_file))
@@ -76,10 +83,8 @@ df_japanese[jap_col] = df_japanese[jap_col].str.replace("＄", "", regex=True)
 df_result = df_japanese.copy()
 
 df_result[jap_col] = df_result[jap_col].str.normalize("NFKC")
-df_result[jap_col] = df_result[
-    jap_col
-].str.strip()  # strip leading and trailing white spaces
-df_result[jap_col] = df_result[jap_col].str.replace(" ", "", regex=True) #remove all spaces in the original
+df_result[jap_col] = df_result[jap_col].str.strip()  # strip leading and trailing white spaces
+df_result[jap_col] = ["".join(re.split(" ", e)) for e in df_result[jap_col]] # remove all spaces
 df_result[eng_col] = df_result[eng_col].astype(str)
 
 df_result[eng_col] = df_result.apply(
