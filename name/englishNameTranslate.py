@@ -66,12 +66,15 @@ endswithDict = dict(zip(df_endswith["Japanese"], df_endswith["English"]))
 flavorDict = dict(zip(df_flavor["Japanese"], df_flavor["English"]))
 lastDict = dict(zip(df_last["Japanese"], df_last["English"]))
 
-df_result = df_japanese.copy()
-
 jap_col = "Product Name"
 eng_col = "English"
 
-df_result[jap_col] = df_result[jap_col].str.replace("＄", "", regex=True)
+# delete all the shuubai mark
+df_japanese[jap_col] = df_japanese[jap_col].str.replace("＄", "", regex=True)
+
+# copy the original df
+df_result = df_japanese.copy()
+
 df_result[jap_col] = df_result[jap_col].str.normalize("NFKC")
 df_result[jap_col] = df_result[
     jap_col
@@ -97,6 +100,9 @@ df_result[eng_col] = df_result[
 ].str.strip()  # strip leading and trailing white spaces
 
 df_result["Barcode Number"] = df_result["Barcode Number"].astype(str)
+
+# revert to the original product name for checking later
+df_result[jap_col] = df_japanese[jap_col]
 
 result = "result.xlsx"
 
