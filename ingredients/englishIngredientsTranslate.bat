@@ -13,7 +13,7 @@ rem Activate the conda environment
 rem Using call is required here, see: https://stackoverflow.com/questions/24678144/conda-environments-and-bat-files
 call %CONDAPATH%\Scripts\activate.bat %ENVPATH%
 
-set FILENAME=englishNameTranslate
+set FILENAME=ingredients
 
 rem Run a python script in that environment
 python %FILENAME%.py
@@ -22,4 +22,4 @@ rem Deactivate the environment
 call conda deactivate
 
 rem open the windows folder file
-call %SystemRoot%\explorer.exe "C:\Users\adipr\PycharmProjects\englishTranslate\excel_list\%FILENAME%\"
+call %SystemRoot%\explorer.exe "C:\Users\adipr\PycharmProjects\englishTranslate\%FILENAME%\"

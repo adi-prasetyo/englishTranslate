@@ -3,7 +3,7 @@ import re
 import os
 import unicodedata
 
-folderPath = r"C:\Users\adipr\PycharmProjects\englishTranslate\excel_list\englishIngredientsTranslate"
+folderPath = r"C:\Users\adipr\PycharmProjects\englishTranslate\ingredients"
 
 ingredients = "ingredients.xlsx"
 ingredients_dictionary = "ingredients_dictionary.xlsx"

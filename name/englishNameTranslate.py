@@ -36,7 +36,7 @@ def sort_df(df):
 
 
 folderPath = (
-    r"C:\Users\adipr\PycharmProjects\englishTranslate\excel_list\englishNameTranslate"
+    r"C:\Users\adipr\PycharmProjects\englishTranslate\name"
 )
 
 dictionary_space = "dictionary_space.xlsx"
