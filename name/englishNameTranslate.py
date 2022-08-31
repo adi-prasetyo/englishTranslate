@@ -34,6 +34,11 @@ def sort_df(df):
     df.sort_values(by=["length", "English"], ascending=False, inplace=True)
     return df
 
+# normalize the zenkaku and remove all spaces in the japanese column
+def normalize_df(df, col):
+        df[col] = df[col].str.normalize("NFKC")
+        df[col] = ["".join(re.split(" ", e)) for e in df[col]]
+
 
 folderPath = (
     r"C:\Users\adipr\PycharmProjects\englishTranslate\name"
@@ -57,11 +62,8 @@ for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
     # sort df and add space
     df = sort_df(df)
     df["English"] = " " + df["English"] + " "
-
-    # normalize the zenkaku and remove all spaces in the japanese column
-    df["Japanese"] = df["Japanese"].str.normalize("NFKC")
-    df["Japanese"] = df["Japanese"].str.replace(" ", "", regex=True)
-    df["Japanese"] = ["".join(re.split(" ", e)) for e in df["Japanese"]]
+    
+    normalize_df(df, "Japanese")
 
 templatePath = r"C:\Users\adipr\Documents\Excel\template"
 japanese_file = "translate eng.xlsx"
@@ -82,9 +84,8 @@ df_japanese[jap_col] = df_japanese[jap_col].str.replace("＄", "", regex=True)
 # copy the original df
 df_result = df_japanese.copy()
 
-df_result[jap_col] = df_result[jap_col].str.normalize("NFKC")
-df_result[jap_col] = df_result[jap_col].str.strip()  # strip leading and trailing white spaces
-df_result[jap_col] = ["".join(re.split(" ", e)) for e in df_result[jap_col]] # remove all spaces
+normalize_df(df_result, jap_col)
+
 df_result[eng_col] = df_result[eng_col].astype(str)
 
 df_result[eng_col] = df_result.apply(
