@@ -117,7 +117,7 @@ def google_translate_col(df,
                     translation_text.append(x)
 
     df[google_col] = translation_text
-    df[google_col] = df[google_col].str.capitalize()
+    df[google_col] = df[google_col].str.title()
 
 
 def rreplace(s, occurrence, old, new):
