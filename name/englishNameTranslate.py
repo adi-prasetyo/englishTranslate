@@ -45,7 +45,7 @@ def getFileName(_time):
     return outputfile, writefile, writename
 
 
-def concat_all(filetime):
+def concat_all(filetime, eng_col=eng_col):
     
     outputfile, writefile, writename = getFileName(filetime)
     
@@ -56,6 +56,8 @@ def concat_all(filetime):
     df_concat = pd.concat([df_snacks, df_drinks, df_foods])
 
     df_concat.rename(columns = {'English Ingredients':google_col}, inplace = True)
+
+    df_concat = df_concat.loc[df_concat[eng_col].str.len() < 2]
     
     df_concat.reset_index(drop=True, inplace=True)
     
