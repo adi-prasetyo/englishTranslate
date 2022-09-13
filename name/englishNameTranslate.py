@@ -57,7 +57,9 @@ def concat_all(filetime, eng_col=eng_col):
 
     df_concat.rename(columns = {'English Ingredients':google_col}, inplace = True)
 
-    df_concat = df_concat.loc[df_concat[eng_col].str.len() < 2]
+    # only select column that has no translation
+    # for some reason that column value is 0
+    df_concat = df_concat.loc[df_concat[eng_col] == 0]
     
     df_concat.reset_index(drop=True, inplace=True)
     
