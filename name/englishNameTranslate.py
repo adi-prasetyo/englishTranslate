@@ -3,6 +3,7 @@ import time
 import re
 import os
 
+from titlecase import titlecase
 from random import randint
 from googletrans import Translator
 from datetime import datetime
@@ -85,6 +86,15 @@ def excel_write(df, writeFile):
     print(writeFile)
 
 
+# make exception for all the words that are already capitalized
+# but only for words here
+def abbreviations(word, **kwargs):
+    if word.upper() in ('AGF', 'QP'):
+        return word.upper() 
+    elif word == word.upper():
+        return word.capitalize()
+
+
 def google_translate_col(df, 
                     jap_col=jap_col, 
                     google_col=google_col,
@@ -109,9 +119,10 @@ def google_translate_col(df,
         while attempts < limit and not success:
             try:
                 trans = translator.translate(x)
+                transTitle = titlecase(trans.text, callback=abbreviations)
 
-                translation_text.append(trans.text)        
-                print(trans.text)
+                translation_text.append(transTitle)        
+                print(transTitle)
                 success = True
             except:
                 attempts += 1
@@ -121,7 +132,6 @@ def google_translate_col(df,
                     translation_text.append(x)
 
     df[google_col] = translation_text
-    df[google_col] = df[google_col].str.title()
 
 
 def rreplace(s, occurrence, old, new):
