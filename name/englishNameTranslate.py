@@ -89,7 +89,7 @@ def excel_write(df, writeFile):
 # make exception for all the words that are already capitalized
 # but only for words here
 def abbreviations(word, **kwargs):
-    if word.upper() in ('AGF', 'QP'):
+    if word.upper() in ('AGF', 'QP', 'SSK', 'QTTA', 'QBB', 'UFO', 'U.F.O'):
         return word.upper() 
     elif word == word.upper():
         return word.capitalize()
