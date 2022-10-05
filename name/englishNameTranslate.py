@@ -2,6 +2,7 @@ import pandas as pd
 import time
 import re
 import os
+import unicodedata as ud
 
 from titlecase import titlecase
 from random import randint
@@ -33,6 +34,20 @@ df_startswith = pd.read_excel(os.path.join(folderPath, dictionary_startswith))
 df_replace = pd.read_excel(os.path.join(folderPath, dictionary_replace))
 df_flavor = pd.read_excel(os.path.join(folderPath, dictionary_flavor))
 df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
+
+latin_letters= {}
+
+def is_latin(uchr):
+    try: return latin_letters[uchr]
+    except KeyError:
+         return latin_letters.setdefault(uchr, 'LATIN' in ud.name(uchr))
+
+
+def only_roman_chars(unistr):
+    return all(is_latin(uchr)
+           for uchr in unistr
+           if uchr.isalpha())
+
 
 def getFileName(_time):
     monthStr = _time.strftime("%B") 
@@ -108,6 +123,11 @@ def google_translate_col(df,
         if len(x) < 2:
             translation_text.append("")
             continue
+        
+        # if the text contains no Japanese chr then return as it is
+        if only_roman_chars(x):
+            translation_text.append(x)
+            continue
 
         initial_wait = randint(1,3)
         retry_wait = randint(2,7)
@@ -163,6 +183,7 @@ def sort_df(df):
     df["length"] = df["Japanese"].str.len()
     df.sort_values(by=["length", "English"], ascending=False, inplace=True)
     return df
+
 
 # normalize the zenkaku and remove all spaces in the japanese column
 def normalize_df(df, col):
