@@ -2,6 +2,7 @@ import pandas as pd
 import time
 import re
 import os
+import sys
 import unicodedata as ud
 
 from titlecase import titlecase
@@ -227,8 +228,13 @@ def translate_df(df, jap_col=jap_col, eng_col=eng_col):
 
     return df_result
 
+# df will be empty if there is nothing to translate
 df_thismonth, thisWriteFile, thisFileName = concat_all(datetime.now())
 df_nextmonth, nextWriteFile, nextFileName = concat_all(datetime.now() + relativedelta(months=1))
+
+# early exit if col eng are all filled
+if len(df_thismonth) == 0 and len(df_nextmonth) == 0:
+    sys.exit("All product names are already translated.")
 
 # df dictionary processing
 for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
@@ -244,17 +250,18 @@ endswithDict = dict(zip(df_endswith["Japanese"], df_endswith["English"]))
 flavorDict = dict(zip(df_flavor["Japanese"], df_flavor["English"]))
 lastDict = dict(zip(df_last["Japanese"], df_last["English"]))
 
-# translate the jap name with custom dict
-df_thismonth_translated = translate_df(df_thismonth)
-df_nextmonth_translated = translate_df(df_nextmonth)
-
+# translate the jap name with custom dict if there is any translation
 # translate with google translation
 # from the half-translated col, not the original jap col
-google_translate_col(df_thismonth_translated, jap_col=eng_col)
-google_translate_col(df_nextmonth_translated, jap_col=eng_col)
+if len(df_thismonth) != 0:
+    df_thismonth_translated = translate_df(df_thismonth)
+    google_translate_col(df_thismonth_translated, jap_col=eng_col)
+    excel_write(df_thismonth_translated, thisWriteFile)
 
-excel_write(df_thismonth_translated, thisWriteFile)
-excel_write(df_nextmonth_translated, nextWriteFile)
+if len(df_nextmonth) != 0:
+    df_nextmonth_translated = translate_df(df_nextmonth)
+    google_translate_col(df_nextmonth_translated, jap_col=eng_col)
+    excel_write(df_nextmonth_translated, nextWriteFile)
 
 dropboxDir = r"C:\Users\adipr\Dropbox\Excel\Translate"
 import shutil
