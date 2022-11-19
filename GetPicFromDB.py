@@ -4,7 +4,7 @@ import shutil
 
 folderPath = r'C:\Users\adipr\Documents\Excel'
 
-excelname = input("Please enter Excel name:")
+excelname = input("Please enter Excel name (without extension. And xlsx only):")
 
 excelfile = excelname + ".xlsx"
 
@@ -22,6 +22,8 @@ for filename in df['JANjpg']:
         shutil.copyfile(os.path.join(save_imagePath, filename), os.path.join(japonPath, filename))
     except:
         emptylist.append(filename[:-4]) #remove the '.jpg' from the list so can select the JAN easier on text file
+
+print("Empty List length: " + str(len(emptylist)))
 
 textFile = 'emptylist.txt'
 
