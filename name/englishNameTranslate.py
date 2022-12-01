@@ -38,6 +38,12 @@ df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
 
 latin_letters= {}
 
+replaceDict = dict(zip(df_replace["Japanese"], df_replace["English"]))
+startswithDict = dict(zip(df_startswith["Japanese"], df_startswith["English"]))
+endswithDict = dict(zip(df_endswith["Japanese"], df_endswith["English"]))
+flavorDict = dict(zip(df_flavor["Japanese"], df_flavor["English"]))
+lastDict = dict(zip(df_last["Japanese"], df_last["English"]))
+
 def is_latin(uchr):
     try: return latin_letters[uchr]
     except KeyError:
@@ -51,10 +57,9 @@ def only_roman_chars(unistr):
 
 
 def getFileName(_time):
-    monthStr = _time.strftime("%B") 
-    yearStr = datetime.today().strftime("%Y")     
-    listname = " ".join([yearStr, monthStr, suffixList])
-    writename = " ".join([yearStr, monthStr, suffixTranslate])
+    year_month_str = _time.strftime("%Y %B")     
+    listname = " ".join([year_month_str, suffixList])
+    writename = " ".join([year_month_str, suffixTranslate])
     
     outputfile = os.path.join(templatePath, listname)
     writefile = os.path.join(templatePath, writename)
@@ -192,7 +197,14 @@ def normalize_df(df, col):
         df[col] = ["".join(re.split(" ", e)) for e in df[col]]
 
 
-def translate_df(df, jap_col=jap_col, eng_col=eng_col):
+def translate_df(df, 
+                jap_col=jap_col, 
+                eng_col=eng_col,
+                startswithDict=startswithDict, 
+                endswithDict=endswithDict,
+                replaceDict=replaceDict,
+                flavorDict=flavorDict,
+                lastDict=lastDict):
 
     # delete all the shuubai mark
     df[jap_col] = df[jap_col].str.replace("＄", "", regex=True)
@@ -243,12 +255,6 @@ for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
     df["English"] = " " + df["English"] + " "
     
     normalize_df(df, "Japanese")
-
-replaceDict = dict(zip(df_replace["Japanese"], df_replace["English"]))
-startswithDict = dict(zip(df_startswith["Japanese"], df_startswith["English"]))
-endswithDict = dict(zip(df_endswith["Japanese"], df_endswith["English"]))
-flavorDict = dict(zip(df_flavor["Japanese"], df_flavor["English"]))
-lastDict = dict(zip(df_last["Japanese"], df_last["English"]))
 
 # translate the jap name with custom dict if there is any translation
 # translate with google translation
