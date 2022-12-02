@@ -3,6 +3,7 @@ import time
 import re
 import os
 import sys
+import shutil
 import unicodedata as ud
 
 from titlecase import titlecase
@@ -37,6 +38,26 @@ df_flavor = pd.read_excel(os.path.join(folderPath, dictionary_flavor))
 df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
 
 latin_letters= {}
+
+def sort_df(df):
+    df["length"] = df["Japanese"].str.len()
+    df.sort_values(by=["length", "English"], ascending=False, inplace=True)
+    return df
+
+
+# normalize the zenkaku and remove all spaces in the japanese column
+def normalize_df(df, col):
+        df[col] = df[col].str.normalize("NFKC")
+        df[col] = ["".join(re.split(" ", e)) for e in df[col]]
+
+
+# df dictionary processing
+for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
+    # sort df and add space
+    df = sort_df(df)
+    df["English"] = " " + df["English"] + " "
+    
+    normalize_df(df, "Japanese")
 
 replaceDict = dict(zip(df_replace["Japanese"], df_replace["English"]))
 startswithDict = dict(zip(df_startswith["Japanese"], df_startswith["English"]))
@@ -185,18 +206,6 @@ def replace_startswith(text, **kwargs):
         return text
 
 
-def sort_df(df):
-    df["length"] = df["Japanese"].str.len()
-    df.sort_values(by=["length", "English"], ascending=False, inplace=True)
-    return df
-
-
-# normalize the zenkaku and remove all spaces in the japanese column
-def normalize_df(df, col):
-        df[col] = df[col].str.normalize("NFKC")
-        df[col] = ["".join(re.split(" ", e)) for e in df[col]]
-
-
 def translate_df(df, 
                 jap_col=jap_col, 
                 eng_col=eng_col,
@@ -248,14 +257,6 @@ df_nextmonth, nextWriteFile, nextFileName = concat_all(datetime.now() + relative
 if len(df_thismonth) == 0 and len(df_nextmonth) == 0:
     sys.exit("All product names are already translated.")
 
-# df dictionary processing
-for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
-    # sort df and add space
-    df = sort_df(df)
-    df["English"] = " " + df["English"] + " "
-    
-    normalize_df(df, "Japanese")
-
 # translate the jap name with custom dict if there is any translation
 # translate with google translation
 # from the half-translated col, not the original jap col
@@ -270,7 +271,6 @@ if len(df_nextmonth) != 0:
     excel_write(df_nextmonth_translated, nextWriteFile)
 
 dropboxDir = r"C:\Users\adipr\Dropbox\Excel\Translate"
-import shutil
 
 shutil.copyfile(
             thisWriteFile,
