@@ -12,8 +12,8 @@ from googletrans import Translator
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-templatePath = r'C:\Users\adipr\Documents\Excel\template'
-folderPath = r"C:\Users\adipr\PycharmProjects\englishTranslate\name"
+templatePath = r'D:\Excel\template'
+folderPath = r"D:\PycharmProjects\englishTranslate\name"
 
 suffixList = 'Item List English.xlsx'
 suffixTranslate = 'Translate Eng.xlsx'
@@ -270,7 +270,7 @@ if len(df_nextmonth) != 0:
     google_translate_col(df_nextmonth_translated, jap_col=eng_col)
     excel_write(df_nextmonth_translated, nextWriteFile)
 
-dropboxDir = r"C:\Users\adipr\Dropbox\Excel\Translate"
+dropboxDir = r"D:\Dropbox\Excel\Translate"
 
 shutil.copyfile(
             thisWriteFile,

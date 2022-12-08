@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import shutil
 
-folderPath = r'C:\Users\adipr\Documents\Excel'
+folderPath = r'D:\Excel'
 
 excelname = input("Please enter Excel name (without extension. And xlsx only):")
 

@@ -22,4 +22,4 @@ rem Deactivate the environment
 call conda deactivate
 
 rem open the windows folder file
-call %SystemRoot%\explorer.exe "C:\Users\adipr\PycharmProjects\englishTranslate\ingredients\"
+call %SystemRoot%\explorer.exe "D:\PycharmProjects\englishTranslate\ingredients\"
