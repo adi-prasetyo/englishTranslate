@@ -93,10 +93,14 @@ def concat_all(filetime, eng_col=eng_col):
     outputfile, writefile, writename = getFileName(filetime)
     
     df_snacks = pd.read_excel(outputfile, 0)
-    df_drinks = pd.read_excel(outputfile, 1)
-    df_foods = pd.read_excel(outputfile, 2)
+
+    # categories are currently not working, so disable these parts
+    # df_drinks = pd.read_excel(outputfile, 1)
+    # df_foods = pd.read_excel(outputfile, 2)
     
-    df_concat = pd.concat([df_snacks, df_drinks, df_foods])
+    # df_concat = pd.concat([df_snacks, df_drinks, df_foods])
+    # temp solution for now
+    df_concat = df_snacks.copy()
 
     df_concat.rename(columns = {'English Ingredients':google_col}, inplace = True)
 
