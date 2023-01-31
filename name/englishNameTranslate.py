@@ -25,7 +25,8 @@ dictionary_replace = "dictionary_replace.xlsx"
 dictionary_flavor = "dictionary_flavor.xlsx"
 dictionary_last = "dictionary_last.xlsx"
 
-jap_col = "Product Name"
+name_col = "Product Name"
+jap_col = "Japanese"
 eng_col = "English"
 google_col = "Google Translation"
 
@@ -39,31 +40,32 @@ df_last = pd.read_excel(os.path.join(folderPath, dictionary_last))
 
 latin_letters= {}
 
-def sort_df(df):
-    df["length"] = df["Japanese"].str.len()
-    df.sort_values(by=["length", "English"], ascending=False, inplace=True)
-    return df
-
-
-# normalize the zenkaku and remove all spaces in the japanese column
+# normalize the zenkaku and remove all spaces in the jap_col column
 def normalize_df(df, col):
         df[col] = df[col].str.normalize("NFKC")
         df[col] = ["".join(re.split(" ", e)) for e in df[col]]
 
 
+def sort_df(df, col):
+    # do this before sorting the length
+    normalize_df(df, col)
+    df["length"] = df[col].str.len()
+    df.sort_values(by=["length", "English"], ascending=False, inplace=True)
+    return df
+
+
 # df dictionary processing
 for df in [df_endswith, df_startswith, df_replace, df_flavor, df_last]:
     # sort df and add space
-    df = sort_df(df)
+    df = sort_df(df, jap_col)
     df["English"] = " " + df["English"] + " "
-    
-    normalize_df(df, "Japanese")
 
-replaceDict = dict(zip(df_replace["Japanese"], df_replace["English"]))
-startswithDict = dict(zip(df_startswith["Japanese"], df_startswith["English"]))
-endswithDict = dict(zip(df_endswith["Japanese"], df_endswith["English"]))
-flavorDict = dict(zip(df_flavor["Japanese"], df_flavor["English"]))
-lastDict = dict(zip(df_last["Japanese"], df_last["English"]))
+
+replaceDict = dict(zip(df_replace[jap_col], df_replace["English"]))
+startswithDict = dict(zip(df_startswith[jap_col], df_startswith["English"]))
+endswithDict = dict(zip(df_endswith[jap_col], df_endswith["English"]))
+flavorDict = dict(zip(df_flavor[jap_col], df_flavor["English"]))
+lastDict = dict(zip(df_last[jap_col], df_last["English"]))
 
 def is_latin(uchr):
     try: return latin_letters[uchr]
@@ -71,6 +73,7 @@ def is_latin(uchr):
          return latin_letters.setdefault(uchr, 'LATIN' in ud.name(uchr))
 
 
+# from stackoverflow, no idea how it works
 def only_roman_chars(unistr):
     return all(is_latin(uchr)
            for uchr in unistr
@@ -124,7 +127,7 @@ def excel_write(df, writeFile):
         worksheet.set_column("L:L", 15)  # JAN column
         worksheet.set_column("M:O", 0)
         worksheet.set_column("P:P", 25)  # maker column
-        worksheet.set_column("Q:Q", 60)  # japanese column
+        worksheet.set_column("Q:Q", 60)  # jap_col column
         worksheet.set_column("R:R", 90)  # english column
         worksheet.set_column("S:S", 90)  # google column
         worksheet.set_column("T:AS", 0)
@@ -142,20 +145,20 @@ def abbreviations(word, **kwargs):
 
 
 def google_translate_col(df, 
-                    jap_col=jap_col, 
+                    name_col=name_col, 
                     google_col=google_col,
                     limit=10):
 
     translation_text = []
     
-    for x in df[jap_col]:
+    for x in df[name_col]:
 
         # if for some reason the value is 0 then dont translate
         if len(x) < 2:
             translation_text.append("")
             continue
         
-        # if the text contains no Japanese chr then return as it is
+        # if the text contains no jap_col chr then return as it is
         if only_roman_chars(x):
             translation_text.append(x)
             continue
@@ -211,7 +214,7 @@ def replace_startswith(text, **kwargs):
 
 
 def translate_df(df, 
-                jap_col=jap_col, 
+                name_col=name_col, 
                 eng_col=eng_col,
                 startswithDict=startswithDict, 
                 endswithDict=endswithDict,
@@ -220,17 +223,17 @@ def translate_df(df,
                 lastDict=lastDict):
 
     # delete all the shuubai mark
-    df[jap_col] = df[jap_col].str.replace("＄", "", regex=True)
+    df[name_col] = df[name_col].str.replace("＄", "", regex=True)
 
     # copy the original df
     df_result = df.copy()
 
-    normalize_df(df_result, jap_col)
+    normalize_df(df_result, name_col)
 
     df_result[eng_col] = df_result[eng_col].astype(str)
 
     df_result[eng_col] = df_result.apply(
-        lambda x: replace_startswith(x[jap_col], **startswithDict), axis=1
+        lambda x: replace_startswith(x[name_col], **startswithDict), axis=1
     )
     df_result[eng_col] = df_result.apply(
         lambda x: replace_endswith(x[eng_col], **endswithDict), axis=1
@@ -249,7 +252,7 @@ def translate_df(df,
     df_result["Barcode Number"] = df_result["Barcode Number"].astype(str)
 
     # revert to the original product name for checking later
-    df_result[jap_col] = df[jap_col]
+    df_result[name_col] = df[name_col]
 
     return df_result
 
@@ -266,12 +269,12 @@ if len(df_thismonth) == 0 and len(df_nextmonth) == 0:
 # from the half-translated col, not the original jap col
 if len(df_thismonth) != 0:
     df_thismonth_translated = translate_df(df_thismonth)
-    google_translate_col(df_thismonth_translated, jap_col=eng_col)
+    google_translate_col(df_thismonth_translated, name_col=eng_col)
     excel_write(df_thismonth_translated, thisWriteFile)
 
 if len(df_nextmonth) != 0:
     df_nextmonth_translated = translate_df(df_nextmonth)
-    google_translate_col(df_nextmonth_translated, jap_col=eng_col)
+    google_translate_col(df_nextmonth_translated, name_col=eng_col)
     excel_write(df_nextmonth_translated, nextWriteFile)
 
 dropboxDir = r"D:\Dropbox\Excel\Translate"
