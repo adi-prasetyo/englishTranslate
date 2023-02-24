@@ -186,10 +186,12 @@ def google_translate_col(df,
                     translation_text.append(x)
 
     # manual correction for Google Translate
-    translation_text = [sub.replace('Pet', 'PET') for sub in translation_text]
-    translation_text = [sub.replace('Ucc', 'UCC') for sub in translation_text]
+    # translation_text = [sub.replace('Pet', 'PET') for sub in translation_text] #Petit becomes PETit so disable this for now
+    # add space at the end to make sure these are not part of words
+    translation_text = [sub.replace('Ucc ', 'UCC ') for sub in translation_text]
     translation_text = [sub.replace('U.f.o.', 'U.F.O.') for sub in translation_text]
-    translation_text = [sub.replace('Agf.', 'AGF') for sub in translation_text]
+    translation_text = [sub.replace('Agf ', 'AGF ') for sub in translation_text]
+    translation_text = [sub.replace('S & B ', 'S&B ') for sub in translation_text]
     df[google_col] = translation_text
 
 
