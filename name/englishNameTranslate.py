@@ -192,6 +192,7 @@ def google_translate_col(df,
     translation_text = [sub.replace('U.f.o.', 'U.F.O.') for sub in translation_text]
     translation_text = [sub.replace('Agf ', 'AGF ') for sub in translation_text]
     translation_text = [sub.replace('S & B ', 'S&B ') for sub in translation_text]
+    translation_text = [sub.replace('AceCook ', 'Acecook ') for sub in translation_text]
     df[google_col] = translation_text
 
 
