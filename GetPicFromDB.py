@@ -13,7 +13,7 @@ df['JANjpg'] = df.iloc[:, 11] + '.jpg'
 df = df.dropna(subset=['JANjpg'])
 df['JANjpg'] = df['JANjpg'].apply('{:0>17}'.format)
 
-save_imagePath = r'D:/save_image/'
+save_imagePath = r'D:/Dropbox/save_image/'
 japonPath = r'D:/japon/'
 emptylist = []
 
