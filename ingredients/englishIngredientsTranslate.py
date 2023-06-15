@@ -24,6 +24,13 @@ df_ingredients["ingredients"] = df_ingredients["ingredients_ori"].str.strip()
 
 # normalize the numbers etc, remove all spaces and clean the separator
 df_ingredients["ingredients"] = df_ingredients["ingredients"].str.normalize("NFKC")
+
+# If there are any NaN values, replace them with the string 'null'
+df_ingredients["ingredients"] = df_ingredients["ingredients"].fillna('null')
+
+# If there are any '0' or 0 values, replace them with the string 'null'
+df_ingredients["ingredients"] = df_ingredients["ingredients"].replace(['0', 0], 'null')
+
 df_ingredients["ingredients"] = [
     "".join(re.split(" ", e)) for e in df_ingredients["ingredients"]
 ]
@@ -37,6 +44,7 @@ df_ingredients["result"] = [
     "".join(translationDict.get(item, item) for item in re.split("(\W)", e))
     for e in df_ingredients["ingredients"]
 ]
+
 # replaced twice cuz stupid '-' separator so need to replace it again with comma split
 df_ingredients["result"] = [
     ", ".join(translationDict.get(item, item) for item in re.split(", ", e))
@@ -56,6 +64,8 @@ df_ingredients["result"] = [
     myString[:1].upper() + myString[1:] for myString in df_ingredients["result"]
 ]
 
+df_ingredients = df_ingredients.replace('Null', '')
+
 df_ingredients.to_excel(
     os.path.join(folderPath, result), sheet_name="Sheet1", index=False
 )
@@ -73,6 +83,7 @@ for word in flat_list:
     if word.isascii() == False:
         jap_word.add(word)
 df_jap = pd.DataFrame(list(jap_word))
+
 df_jap.to_excel(
     os.path.join(folderPath, ingredients_unknown), sheet_name="Sheet1", index=False
 )
