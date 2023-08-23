@@ -20,6 +20,3 @@ python %FILENAME%.py
 
 rem Deactivate the environment
 call conda deactivate
-
-rem open the windows folder file
-call %SystemRoot%\explorer.exe "D:\PycharmProjects\englishTranslate\ingredients\"
