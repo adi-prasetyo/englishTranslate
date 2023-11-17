@@ -17,6 +17,12 @@ save_imagePath = r'D:/Dropbox/save_image/'
 japonPath = r'D:/japon/'
 emptylist = []
 
+# Delete all files in the japon folder first
+for file in os.listdir(japonPath):
+    if file.endswith(".jpg"):
+        os.remove(os.path.join(japonPath, file))
+
+# Copy the pictures
 for filename in df['JANjpg']:
     try:
         shutil.copyfile(os.path.join(save_imagePath, filename), os.path.join(japonPath, filename))
