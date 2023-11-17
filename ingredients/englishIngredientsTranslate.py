@@ -16,8 +16,8 @@ df_dictionary = pd.read_excel(os.path.join(folderPath, ingredients_dictionary))
 df_separator = pd.read_excel(os.path.join(folderPath, ingredients_separator))
 
 # put into dict
-sepDict = dict(zip(df_separator.Separator_original, df_separator.Separator_clean))
-translationDict = dict(zip(df_dictionary.Japanese, df_dictionary.English))
+sepDict = dict(zip(df_separator.separator_original, df_separator.separator_clean))
+translationDict = dict(zip(df_dictionary.japanese, df_dictionary.english))
 
 # separate original and japanese modified for easier debugging
 df_ingredients["ingredients"] = df_ingredients["ingredients_ori"].str.strip()
